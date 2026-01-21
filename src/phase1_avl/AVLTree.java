@@ -96,78 +96,80 @@ public class AVLTree {
     }
 
     /* پیدا کردن کوچک‌ترین نود */
-    private AVLNode minValueNode(AVLNode node) {
-        AVLNode current = node;
+    private AVLNode getMaxNode(AVLNode node) {
+    AVLNode current = node;
+    while (current.right != null)
+        current = current.right;
+    return current;
+}
 
-        while (current.left != null)
-            current = current.left;
-
-        return current;
-    }
 
     /* حذف */
-    private AVLNode delete(AVLNode node, int channelID) {
+    private AVLNode deleteNode(AVLNode node, int key) {
 
-        if (node == null)
-            return node;
+    if (node == null)
+        return null;
 
-        if (channelID < node.channelID)
-            node.left = delete(node.left, channelID);
-        else if (channelID > node.channelID)
-            node.right = delete(node.right, channelID);
-        else {
+    // مرحله 1: پیدا کردن نود
+    if (key < node.channelID) {
+        node.left = deleteNode(node.left, key);
+    } 
+    else if (key > node.channelID) {
+        node.right = deleteNode(node.right, key);
+    } 
+    else {
+        // نود پیدا شد
 
-            // نود با یک یا صفر فرزند
-            if (node.left == null || node.right == null) {
-
-                AVLNode temp;
-                if (node.left != null)
-                    temp = node.left;
-                else
-                    temp = node.right;
-
-                if (temp == null) {
-                    node = null;
-                } else {
-                    node = temp;
-                }
-
-            } else {
-                // نود با دو فرزند
-                AVLNode temp = minValueNode(node.right);
-                node.channelID = temp.channelID;
-                node.right = delete(node.right, temp.channelID);
-            }
+        // حالت 1: بدون فرزند
+        if (node.left == null && node.right == null) {
+            return null;
         }
 
-        if (node == null)
-            return node;
+        // حالت 2: فقط یک فرزند
+        if (node.left == null)
+            return node.right;
 
-        node.height = max(height(node.left), height(node.right)) + 1;
+        if (node.right == null)
+            return node.left;
 
-        int balance = getBalance(node);
-
-        if (balance > 1 && getBalance(node.left) >= 0)
-            return rotateRight(node);
-
-        if (balance > 1 && getBalance(node.left) < 0) {
-            node.left = rotateLeft(node.left);
-            return rotateRight(node);
-        }
-
-        if (balance < -1 && getBalance(node.right) <= 0)
-            return rotateLeft(node);
-
-        if (balance < -1 && getBalance(node.right) > 0) {
-            node.right = rotateRight(node.right);
-            return rotateLeft(node);
-        }
-
-        return node;
+        // حالت 3: دو فرزند (استفاده از predecessor)
+        AVLNode temp = getMaxNode(node.left);
+        node.channelID = temp.channelID;
+        node.left = deleteNode(node.left, temp.channelID);
     }
 
+    // مرحله 2: بروزرسانی ارتفاع
+    node.height = 1 + max(height(node.left), height(node.right));
+
+    // مرحله 3: بالانس کردن
+    int balance = getBalance(node);
+
+    // Left Left
+    if (balance > 1 && getBalance(node.left) >= 0)
+        return rotateRight(node);
+
+    // Left Right
+    if (balance > 1 && getBalance(node.left) < 0) {
+        node.left = rotateLeft(node.left);
+        return rotateRight(node);
+    }
+
+    // Right Right
+    if (balance < -1 && getBalance(node.right) <= 0)
+        return rotateLeft(node);
+
+    // Right Left
+    if (balance < -1 && getBalance(node.right) > 0) {
+        node.right = rotateRight(node.right);
+        return rotateLeft(node);
+    }
+
+    return node;
+    }
+
+
     public void delete(int channelID) {
-        root = delete(root, channelID);
+        root = deleteNode(root, channelID);
     }
 
     /* جستجو */
@@ -193,18 +195,26 @@ public class AVLTree {
         displayNode(root);
     }
 
-    /* نمایش هر نود و فرزندان مستقیمش */
     private void displayNode(AVLNode node) {
-        if (node == null)
-            return;
+    if (node == null)
+        return;
 
+    // فقط وقتی نود حداقل یک فرزند دارد، چاپ می‌شود
+    if (node.left != null || node.right != null) {
         int leftID = (node.left != null) ? node.left.channelID : -1;
         int rightID = (node.right != null) ? node.right.channelID : -1;
-
         System.out.println(node.channelID + " " + leftID + "," + rightID);
+    }
 
+    // ادامه بازگشت به فرزندان (حتی اگر خودش چاپ نشده باشد)
+    if (node.left != null)
         displayNode(node.left);
+    if (node.right != null)
         displayNode(node.right);
     }
+
+
+
+
 
 }
