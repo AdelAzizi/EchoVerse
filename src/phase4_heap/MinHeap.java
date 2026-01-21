@@ -70,11 +70,27 @@ public class MinHeap {
 
     /* نمایش هیپ */
     public void display() {
-        for (int i = 0; i < size; i++) {
-            System.out.print(heap[i].id + "(" + heap[i].priority + ") ");
-        }
-        System.out.println();
+    Episode[] temp = new Episode[size];
+
+    // کپی هیپ
+    for (int i = 0; i < size; i++) {
+        temp[i] = heap[i];
     }
+
+    int tempSize = size;
+
+    // مرتب‌سازی نمایشی
+    for (int i = 0; i < tempSize; i++) {
+        Episode min = extractMin();
+        System.out.print(min.id + "(" + min.priority + ") ");
+    }
+    System.out.println();
+
+    // بازگرداندن هیپ
+    heap = temp;
+    size = tempSize;
+    }
+
 
     /* ----------------- توابع کمکی ----------------- */
 
