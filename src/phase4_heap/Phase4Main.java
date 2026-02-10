@@ -27,6 +27,7 @@ public class Phase4Main {
 
                 case "display":
                     heap.display();
+                    System.out.println();
                     break;
 
                 case "extract-min":
@@ -35,6 +36,7 @@ public class Phase4Main {
                         System.out.println("Extracted episode: "
                                 + min.id + " with priority " + min.priority);
                     }
+                    System.out.println();
                     break;
 
                 case "delete":
@@ -42,6 +44,7 @@ public class Phase4Main {
                     if (deleted) {
                         System.out.println("Episode " + parts[1] + " deleted");
                     }
+                    System.out.println();
                     break;
 
                 case "heap-sort":

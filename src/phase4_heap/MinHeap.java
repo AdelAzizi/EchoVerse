@@ -59,11 +59,17 @@ public class MinHeap {
     public Episode[] heapSort() {
         Episode[] result = new Episode[size];
         int originalSize = size;
+        Episode[] originalHeap = new Episode[size];
+
+        for (int i = 0; i < size; i++) {
+            originalHeap[i] = heap[i];
+        }
 
         for (int i = 0; i < result.length; i++) {
             result[i] = extractMin();
         }
 
+        heap = originalHeap;
         size = originalSize;
         return result;
     }
